@@ -36,5 +36,43 @@ class Database:
 
         self.conn.commit()
 
+    def insert_job(self, job):
+        cursor = self.conn.cursor()
+
+        cursor.execute("""
+        INSERT INTO jobs (
+            id,
+            command,
+            state,
+            attempts,
+            max_retries,
+            next_retry_at,
+            worker_id,
+            created_at,
+            updated_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            job.id,
+            job.command,
+            job.state,
+            job.attempts,
+            job.max_retries,
+            job.next_retry_at,
+            job.worker_id,
+            job.created_at,
+            job.updated_at
+        ))
+
+        self.conn.commit()
+
+
+    def get_all_jobs(self):
+        cursor = self.conn.cursor()
+
+        cursor.execute("SELECT * FROM jobs")
+
+        return cursor.fetchall()
+
     def close(self):
         self.conn.close()
