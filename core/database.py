@@ -74,5 +74,18 @@ class Database:
 
         return cursor.fetchall()
 
+    def get_jobs_by_state(self, state=None):
+        cursor = self.conn.cursor()
+
+        if state:
+            cursor.execute(
+                "SELECT * FROM jobs WHERE state = ?",
+                (state,)
+            )
+        else:
+            cursor.execute("SELECT * FROM jobs")
+
+        return cursor.fetchall()
+
     def close(self):
         self.conn.close()
