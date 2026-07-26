@@ -137,6 +137,17 @@ class Database:
 
         self.conn.commit()
 
+    def get_job(self, job_id):
+        cursor = self.conn.cursor()
+
+        cursor.execute(
+            "SELECT * FROM jobs WHERE id = ?",
+            (job_id,)
+        )
+
+        return cursor.fetchone()
+    
+
 
     def get_all_jobs(self):
         cursor = self.conn.cursor()

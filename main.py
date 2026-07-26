@@ -3,6 +3,7 @@ import argparse
 from cli.enqueue import enqueue
 from cli.list_jobs import list_jobs
 from cli.worker import worker
+from cli.status import status
 
 
 def main():
@@ -53,6 +54,19 @@ def main():
         help="Run one pending job"
     )
 
+    # ---------------- Status ----------------
+
+    status_parser = subparsers.add_parser(
+        "status",
+        help="Show job details"
+    )
+
+    status_parser.add_argument(
+        "--id",
+        required=True,
+        help="Job ID"
+    )
+
     # Parse arguments AFTER creating all commands
     args = parser.parse_args()
 
@@ -65,6 +79,9 @@ def main():
 
     elif args.action == "worker":
         worker()
+
+    elif args.action == "status":
+        status(args.id)
 
     else:
         parser.print_help()
