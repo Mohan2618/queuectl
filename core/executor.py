@@ -10,7 +10,17 @@ def execute(command):
             text=True
         )
 
-        return result.returncode == 0
+        return {
+            "success": result.returncode == 0,
+            "stdout": result.stdout.strip(),
+            "stderr": result.stderr.strip(),
+            "exit_code": result.returncode
+        }
 
-    except Exception:
-        return False
+    except Exception as e:
+        return {
+            "success": False,
+            "stdout": "",
+            "stderr": str(e),
+            "exit_code": -1
+        }

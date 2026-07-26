@@ -8,7 +8,9 @@ class Database:
     def __init__(self):
         self.conn = sqlite3.connect(DB_PATH)
         self.conn.row_factory = sqlite3.Row
+
         self.create_tables()
+        self.migrate_database()
 
     def create_tables(self):
         cursor = self.conn.cursor()
@@ -22,10 +24,35 @@ class Database:
             max_retries INTEGER DEFAULT 3,
             next_retry_at TEXT,
             worker_id TEXT,
+            stdout TEXT,
+            stderr TEXT,
+            exit_code INTEGER,
             created_at TEXT,
             updated_at TEXT
         )
         """)
+
+    def migrate_database(self):
+        cursor = self.conn.cursor()
+
+        migrations = [
+            ("stdout", "TEXT"),
+            ("stderr", "TEXT"),
+            ("exit_code", "INTEGER"),
+        ]
+
+        for column, datatype in migrations:
+            try:
+                cursor.execute(
+                    f"ALTER TABLE jobs ADD COLUMN {column} {datatype}"
+                )
+                print(f"Added column: {column}")
+
+            except sqlite3.OperationalError:
+                # Column already exists
+                pass
+
+        self.conn.commit()
 
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS config (
@@ -91,6 +118,25 @@ class Database:
 
         self.conn.commit()
 
+    def update_job_result(self, job_id, stdout, stderr, exit_code):
+        cursor = self.conn.cursor()
+
+        cursor.execute("""
+            UPDATE jobs
+            SET stdout = ?,
+                stderr = ?,
+                exit_code = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        """, (
+            stdout,
+            stderr,
+            exit_code,
+            job_id
+        ))
+
+        self.conn.commit()
+
 
     def get_all_jobs(self):
         cursor = self.conn.cursor()
@@ -111,6 +157,25 @@ class Database:
             cursor.execute("SELECT * FROM jobs")
 
         return cursor.fetchall()
+
+    def update_job_result(self, job_id, stdout, stderr, exit_code):
+        cursor = self.conn.cursor()
+
+        cursor.execute("""
+            UPDATE jobs
+            SET stdout = ?,
+                stderr = ?,
+                exit_code = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        """, (
+            stdout,
+            stderr,
+            exit_code,
+            job_id
+        ))
+
+        self.conn.commit()
 
     def close(self):
         self.conn.close()

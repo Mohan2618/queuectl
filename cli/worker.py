@@ -16,9 +16,16 @@ def worker():
 
     db.update_job_state(job["id"], "running")
 
-    success = execute(job["command"])
+    result = execute(job["command"])
 
-    if success:
+    db.update_job_result(
+        job["id"],
+        result["stdout"],
+        result["stderr"],
+        result["exit_code"]
+    )
+
+    if result["success"]:
         db.update_job_state(job["id"], "completed")
         print("Completed.")
     else:
