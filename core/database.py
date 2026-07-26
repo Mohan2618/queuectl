@@ -66,6 +66,31 @@ class Database:
 
         self.conn.commit()
 
+    def get_next_pending_job(self):
+        cursor = self.conn.cursor()
+
+        cursor.execute("""
+            SELECT *
+            FROM jobs
+            WHERE state = 'pending'
+            ORDER BY created_at
+            LIMIT 1
+        """)
+
+        return cursor.fetchone()
+
+    def update_job_state(self, job_id, state):
+        cursor = self.conn.cursor()
+
+        cursor.execute("""
+            UPDATE jobs
+            SET state = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        """, (state, job_id))
+
+        self.conn.commit()
+
 
     def get_all_jobs(self):
         cursor = self.conn.cursor()
