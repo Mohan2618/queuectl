@@ -4,6 +4,7 @@ from cli.enqueue import enqueue
 from cli.list_jobs import list_jobs
 from cli.worker import run_worker
 from cli.status import status
+from cli.config_cmd import config_set, config_get
 
 
 def main():
@@ -73,6 +74,20 @@ def main():
         help="Job ID"
     )
 
+    config_parser = subparsers.add_parser(
+        "config",
+        help="Manage configuration"
+    )
+
+    config_sub = config_parser.add_subparsers(dest="config_action")
+
+    set_parser = config_sub.add_parser("set")
+    set_parser.add_argument("key")
+    set_parser.add_argument("value")
+
+    get_parser = config_sub.add_parser("get")
+    get_parser.add_argument("key")
+
     # Parse arguments AFTER creating all commands
     args = parser.parse_args()
 
@@ -88,6 +103,14 @@ def main():
 
     elif args.action == "status":
         status(args.id)
+
+    elif args.action == "config":
+
+        if args.config_action == "set":
+            config_set(args.key, args.value)
+
+        elif args.config_action == "get":
+            config_get(args.key)
 
     else:
         parser.print_help()

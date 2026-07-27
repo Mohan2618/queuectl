@@ -303,6 +303,32 @@ class Database:
 
         return cursor.rowcount
 
+    def set_config(self, key, value):
+        cursor = self.conn.cursor()
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO config (key, value)
+            VALUES (?, ?)
+        """, (key, str(value)))
+
+        self.conn.commit()
+
+
+    def get_config(self, key, default=None):
+        cursor = self.conn.cursor()
+
+        cursor.execute(
+            "SELECT value FROM config WHERE key = ?",
+            (key,)
+        )
+
+        row = cursor.fetchone()
+
+        if row:
+            return row["value"]
+
+        return default
+
     # --------------------------------------------------
     # Cleanup
     # --------------------------------------------------
