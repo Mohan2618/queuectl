@@ -3,6 +3,7 @@ import time
 from core.database import Database
 from core.executor import execute
 from core.scheduler import calculate_next_retry
+from core.recovery import recover_jobs
 
 
 def worker_once(worker_id):
@@ -71,6 +72,8 @@ def worker_once(worker_id):
 
 def run_worker(worker_id):
     print("Worker started.")
+
+    
 
     waiting = False
 

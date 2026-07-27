@@ -287,6 +287,22 @@ class Database:
 
         return cursor.rowcount == 1
 
+    def recover_running_jobs(self):
+        cursor = self.conn.cursor()
+
+        cursor.execute("""
+            UPDATE jobs
+            SET
+                state = 'pending',
+                worker_id = NULL
+            WHERE
+                state = 'running'
+        """)
+
+        self.conn.commit()
+
+        return cursor.rowcount
+
     # --------------------------------------------------
     # Cleanup
     # --------------------------------------------------
