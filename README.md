@@ -88,8 +88,7 @@ queuectl/
 Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/queuectl.git
-
+git clone https://github.com/Mohan2618/queuectl.git
 cd queuectl
 ```
 
