@@ -3,3 +3,12 @@ __pycache__/
 *.log
 .vscode/
 .env
+
+.venv/
+
+logs/
+
+queue.db
+test_queue.db
+
+.idea/
