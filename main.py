@@ -54,6 +54,12 @@ def main():
         help="Run one pending job"
     )
 
+    worker_parser.add_argument(
+        "--id",
+        required=True,
+        help="Worker ID"
+    )
+
     # ---------------- Status ----------------
 
     status_parser = subparsers.add_parser(
@@ -78,7 +84,7 @@ def main():
         list_jobs(args.state)
 
     elif args.action == "worker":
-        run_worker()
+        run_worker(args.id)
 
     elif args.action == "status":
         status(args.id)

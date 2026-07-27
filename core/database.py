@@ -267,6 +267,26 @@ class Database:
 
         self.conn.commit()
 
+    def claim_job(self, job_id, worker_id):
+        cursor = self.conn.cursor()
+
+        cursor.execute("""
+            UPDATE jobs
+            SET
+                state = 'running',
+                worker_id = ?
+            WHERE
+                id = ?
+                AND state = 'pending'
+        """, (
+            worker_id,
+            job_id
+        ))
+
+        self.conn.commit()
+
+        return cursor.rowcount == 1
+
     # --------------------------------------------------
     # Cleanup
     # --------------------------------------------------

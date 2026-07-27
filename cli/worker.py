@@ -5,20 +5,28 @@ from core.executor import execute
 from core.scheduler import calculate_next_retry
 
 
-def worker_once():
+def worker_once(worker_id):
     # 👇 Everything that is currently inside your worker()
     db = Database()
 
     job = db.get_next_pending_job()
 
     if job is None:
-        print("No pending jobs.")
         db.close()
         return
 
-    print(f"Executing {job['id']}...")
+    print(
+        f"[{worker_id}] Executing {job['id']}..."
+    )
 
-    db.update_job_state(job["id"], "running")
+    claimed = db.claim_job(
+        job["id"],
+        worker_id
+    )
+
+    if not claimed:
+        db.close()
+        return False
 
     result = execute(job["command"])
 
@@ -61,7 +69,7 @@ def worker_once():
     db.close()
 
 
-def run_worker():
+def run_worker(worker_id):
     print("Worker started.")
 
     waiting = False
@@ -69,7 +77,7 @@ def run_worker():
     try:
         while True:
 
-            processed = worker_once()
+            processed = worker_once(worker_id)
 
             if processed:
                 waiting = False
