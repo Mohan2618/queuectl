@@ -2,7 +2,7 @@ import argparse
 
 from cli.enqueue import enqueue
 from cli.list_jobs import list_jobs
-from cli.worker import worker
+from cli.worker import run_worker
 from cli.status import status
 
 
@@ -78,7 +78,7 @@ def main():
         list_jobs(args.state)
 
     elif args.action == "worker":
-        worker()
+        run_worker()
 
     elif args.action == "status":
         status(args.id)
